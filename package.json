@@ -1,0 +1,30 @@
+{
+  "name": "spends",
+  "version": "1.0.0",
+  "description": "Aplicación para el manejo de presupuesto personal",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon src/" 
+  },
+  "keywords": [
+    "presupuesto",
+    "gastos",
+    "nodejs",
+    "javascript"
+  ],
+  "author": "Eder Lara Trujillo",
+  "license": "MIT",
+  "dependencies": {
+    "connect-multiparty": "^2.2.0",
+    "dotenv": "^10.0.0",
+    "express": "^4.17.2",
+    "jwt-simple": "^0.5.6",
+    "moment": "^2.29.1",
+    "morgan": "^1.10.0",
+    "mysql": "^2.18.1"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.15"
+  }
+}
