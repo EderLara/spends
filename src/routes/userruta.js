@@ -13,6 +13,8 @@ const api = express.Router();
 
 // Rutas:
 api.get('/testuser', userControl.userTest);
+api.post('/usuario/nuevo', userControl.setUser);
+api.post('/usuario/ingreso', userControl.loginUser);
 
 
 module.exports = api;

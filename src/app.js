@@ -1,6 +1,6 @@
 /** 
  * Aplicativo BackEnd para el manejo del presupuesto personal
- * Autor: @Eder Lara Trujillo
+ * @author: Eder Lara Trujillo
  * Año: 2022
  */
  
