@@ -1,3 +1,16 @@
+/* *********************************** Configuraciones de motor MySql *********************************** */
+
+/* -------------------------------------- Variables Globales -------------------------------------- */
+SET GLOBAL sql_mode=(SELECT REPLACE(@@sql_mode, 'ONLY_FULL_GROUP_BY', ''));
+SET GLOBAL log_bin_trust_function_creators = 1;
+SET sql_mode='STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION';
+SET GLOBAL event_scheduler = ON;
+
+/* -------------------------------------- Eventos -------------------------------------- */
+CREATE EVENT insertion_event
+ON SCHEDULE EVERY 1 YEAR STARTS '2023-01-01 00:00:00'
+DO INSERT INTO periodo VALUES ('', year(curdate()));
+
 /* -------------------------------------- Login -------------------------------------- */
 CREATE PROCEDURE `loginUser`(
 in nickuser varchar(200),
@@ -25,7 +38,7 @@ BEGIN
 END
 
 /* -------------------------------------- crudUsuario -------------------------------------- */
-CREATE DEFINER=`root`@`%` PROCEDURE `crudUsuario`(
+CREATE PROCEDURE `crudUsuario`(
 in v_idusuario int,
 in v_nickname varchar(150),
 in v_passuser varchar(200),
@@ -60,3 +73,48 @@ CASE
         end if;
 end case;	
 END
+
+/* -------------------------------------- crudPresupuesto -------------------------------------- */
+CREATE PROCEDURE `crudPresupuesto`(
+in v_idpresupuesto int, 
+in v_valorPresupuesto decimal(20,2), 
+in v_creado_el datetime, 
+in v_modificado_el datetime, 
+in v_idperiodo int, 
+in v_idmes int, 
+in v_idconcepto int, 
+in v_idusuario int, 
+in accion varchar(45)
+)
+BEGIN
+DECLARE mes INT DEFAULT 12;
+	CASE
+		WHEN accion = 'crear' then
+			while mes > 0 do
+				set v_idpresupuesto = 0;
+				insert into presupuesto values (v_idpresupuesto, v_valorPresupuesto, v_creado_el, v_modificado_el, v_idperiodo, mes, v_idconcepto, v_idusuario);
+				set mes = mes - 1;
+			end while;
+			select ('Se ha registrado el presupuesto anual para el concepto') as mensaje;
+	END CASE;
+END
+
+/* -------------------------------------- Vistas Views -------------------------------------- */
+CREATE 
+    ALGORITHM = UNDEFINED 
+    SQL SECURITY DEFINER
+VIEW `vpresupuesto` AS
+    SELECT 
+        `p`.`periodo` AS `periodo`,
+        `m`.`nombreMes` AS `nombreMes`,
+        `t`.`nombreCategoria` AS `tipo`,
+        `c`.`categoria` AS `concepto`,
+        `pr`.`valorPresupuesto` AS `valorPresupuesto`,
+        `pr`.`modificado_el` AS `modificado_el`
+    FROM
+        ((((`presupuesto` `pr`
+        JOIN `periodo` `p` ON ((`pr`.`idperiodo` = `p`.`idperiodo`)))
+        JOIN `mes` `m` ON ((`pr`.`idmes` = `m`.`idmes`)))
+        JOIN `concepto` `c` ON ((`pr`.`idconcepto` = `c`.`idconcepto`)))
+        JOIN `categoria` `t` ON ((`c`.`idcategoria` = `t`.`idcategoria`)))
+    ORDER BY `pr`.`idmes`
